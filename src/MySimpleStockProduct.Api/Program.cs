@@ -1,6 +1,7 @@
 using MySimpleStockProduct.Api.Controllers;
+using MySimpleStockProduct.IoC;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
@@ -8,13 +9,16 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-var app = builder.Build();
+builder.Services.AddInfrastructure(builder.Configuration);
+
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
 app.MapProductEndpoints();
 app.UseHttpsRedirection();
 

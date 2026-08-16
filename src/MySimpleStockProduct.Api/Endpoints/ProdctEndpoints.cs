@@ -4,7 +4,7 @@ namespace MySimpleStockProduct.Api.Controllers
     {
         public static IEndpointRouteBuilder MapProductEndpoints(this IEndpointRouteBuilder endpoints)
         {
-            var group = endpoints.MapGroup("/api/products").WithTags("Products");
+            RouteGroupBuilder group = endpoints.MapGroup("/api/products").WithTags("Products");
 
             group.MapGet("/", () =>
                     {
