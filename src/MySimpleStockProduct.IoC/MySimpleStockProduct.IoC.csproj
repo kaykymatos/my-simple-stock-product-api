@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MySimpleStockProduct.Application\MySimpleStockProduct.Application.csproj" />
     <ProjectReference Include="..\MySimpleStockProduct.Infra\MySimpleStockProduct.Infra.csproj" />
   </ItemGroup>
 
