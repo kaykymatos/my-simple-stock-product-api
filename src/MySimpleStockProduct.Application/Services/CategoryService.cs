@@ -1,6 +1,8 @@
-﻿using MySimpleStockProduct.Application.DTOs;
+﻿using FluentValidation.Results;
+using MySimpleStockProduct.Application.DTOs;
 using MySimpleStockProduct.Application.Interfaces;
 using MySimpleStockProduct.Application.Mappers;
+using MySimpleStockProduct.Application.Validators;
 using MySimpleStockProduct.Domain.Entities;
 using MySimpleStockProduct.Domain.Interfaces;
 
@@ -9,10 +11,12 @@ namespace MySimpleStockProduct.Application.Services
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository _categoryRepository;
+        private readonly CategoryDTOValidator _validator;
 
         public CategoryService(ICategoryRepository categoryRepository)
         {
             _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
+            _validator = new CategoryDTOValidator();
         }
 
         public async Task<ResponseDTO<CategoryDTO>> CreateAsync(CategoryDTO dto, CancellationToken cancellationToken = default)
@@ -21,14 +25,28 @@ namespace MySimpleStockProduct.Application.Services
 
             if (dto is null)
             {
-                response.Fail([], "Category payload is null.");
+                response.Fail("Category payload is null.");
                 return response;
             }
 
-            Category entity = new Category(dto.Name, dto.Description);
-            await _categoryRepository.AddAsync(entity, cancellationToken).ConfigureAwait(false);
-            response.Ok(CategoryMapper.ToDto(entity));
-            return response;
+            try
+            {
+                ValidationResult validationResult = _validator.Validate(dto);
+                if (!validationResult.IsValid)
+                {
+                    response.Fail(validationErrors: validationResult.ToDictionary());
+                    return response;
+                }
+                Category entity = new Category(dto.Name, dto.Description);
+                await _categoryRepository.AddAsync(entity, cancellationToken).ConfigureAwait(false);
+                response.Ok(CategoryMapper.ToDto(entity));
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.FromException(ex);
+                return response;
+            }
         }
 
         public async Task<ResponseDTO<bool>> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
@@ -37,25 +55,27 @@ namespace MySimpleStockProduct.Application.Services
 
             if (id == Guid.Empty)
             {
-                response.Fail([], "Invalid id.");
+                response.Fail("Invalid id.");
                 return response;
             }
 
             Category? exists = await _categoryRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
             if (exists is null)
             {
-                response.Fail([], "Category not found.");
+                response.Fail("Category not found.");
                 return response;
             }
 
             try
             {
                 await _categoryRepository.DeleteAsync(exists, cancellationToken).ConfigureAwait(false);
+                response.Ok(true);
                 return response;
             }
             catch (Exception ex)
             {
-                return response.FromException(ex);
+                response.FromException(ex);
+                return response;
             }
         }
 
@@ -76,14 +96,14 @@ namespace MySimpleStockProduct.Application.Services
 
             if (id == Guid.Empty)
             {
-                response.Fail([], "Invalid id.");
+                response.Fail("Invalid id.");
                 return response;
             }
 
             Category? entity = await _categoryRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
             if (entity is null)
             {
-                response.Fail([], "Category not found.");
+                response.Fail("Category not found.");
                 return response;
             }
 
@@ -97,14 +117,14 @@ namespace MySimpleStockProduct.Application.Services
 
             if (id == Guid.Empty || dto is null)
             {
-                response.Fail([], "Invalid input.");
+                response.Fail("Invalid input.");
                 return response;
             }
 
             Category? existing = await _categoryRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
             if (existing is null)
             {
-                response.Fail([], "Category not found.");
+                response.Fail("Category not found.");
                 return response;
             }
 
@@ -112,9 +132,23 @@ namespace MySimpleStockProduct.Application.Services
             existing.Description = dto.Description;
             existing.UpdatedAt = DateTime.UtcNow;
 
-            await _categoryRepository.UpdateAsync(existing, cancellationToken).ConfigureAwait(false);
-            response.Ok(CategoryMapper.ToDto(existing));
-            return response;
+            try
+            {
+                ValidationResult validationResult = _validator.Validate(dto);
+                if (!validationResult.IsValid)
+                {
+                    response.Fail(validationErrors: validationResult.ToDictionary());
+                    return response;
+                }
+                await _categoryRepository.UpdateAsync(existing, cancellationToken).ConfigureAwait(false);
+                response.Ok(CategoryMapper.ToDto(existing));
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.FromException(ex);
+                return response;
+            }
         }
     }
 }

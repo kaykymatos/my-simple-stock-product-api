@@ -2,45 +2,41 @@
 {
     public record ResponseDTO<T>
     {
-        public bool Success { get; init; }
-        public string? Message { get; init; }
-        public T? Data { get; init; }
-        public int StatusCode { get; init; }
-        public IEnumerable<string>? Errors { get; init; }
-        public Dictionary<string, string[]>? ValidationErrors { get; init; }
+        public bool Success { get; private set; }
+        public string? Message { get; private set; }
+        public T? Data { get; private set; }
+        public int StatusCode { get; private set; }
+        public Dictionary<string, string[]>? Errors { get; private set; }
 
-        public ResponseDTO<T> Ok(T? data, string? message = null, int statusCode = 200) =>
-            new()
-            {
-                Success = true,
-                Data = data,
-                Message = message,
-                StatusCode = statusCode,
-                Errors = Array.Empty<string>(),
-                ValidationErrors = null
-            };
+        public void Ok(T? data, string? message = null, int statusCode = 200)
+        {
+            Success = true;
+            Data = data;
+            Message = message;
+            StatusCode = statusCode;
+            Errors = null;
+        }
 
-        public ResponseDTO<T> Fail(IEnumerable<string>? errors = null, string? message = null, int statusCode = 400, Dictionary<string, string[]>? validationErrors = null) =>
-            new()
-            {
-                Success = false,
-                Data = default,
-                Message = message,
-                StatusCode = statusCode,
-                Errors = errors ?? Array.Empty<string>(),
-                ValidationErrors = validationErrors
-            };
+        public void Fail(string? message = null, int statusCode = 400, IDictionary<string, string[]>? validationErrors = null)
+        {
+            Success = false;
+            Data = default;
+            Message = message;
+            StatusCode = statusCode;
+            Errors = validationErrors?.ToDictionary();
+        }
 
-        public ResponseDTO<T> FromException(Exception exception, int statusCode = 500) =>
-            new()
+        public void FromException(Exception exception, int statusCode = 500)
+        {
+            Success = false;
+            Data = default;
+            Message = exception.Message;
+            StatusCode = statusCode;
+            Errors = new Dictionary<string, string[]>
             {
-                Success = false,
-                Data = default,
-                Message = exception.Message,
-                StatusCode = statusCode,
-                Errors = new[] { exception.ToString() },
-                ValidationErrors = null
+                { "InternalServerError", new[] { exception.ToString() } }
             };
+        }
     }
     public record ResponseDTO : ResponseDTO<object?>;
 }
