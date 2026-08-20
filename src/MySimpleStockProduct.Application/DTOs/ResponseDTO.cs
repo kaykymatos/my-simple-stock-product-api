@@ -9,7 +9,7 @@
         public IEnumerable<string>? Errors { get; init; }
         public Dictionary<string, string[]>? ValidationErrors { get; init; }
 
-        public static ResponseDTO<T> Ok(T? data, string? message = null, int statusCode = 200) =>
+        public ResponseDTO<T> Ok(T? data, string? message = null, int statusCode = 200) =>
             new()
             {
                 Success = true,
@@ -20,7 +20,7 @@
                 ValidationErrors = null
             };
 
-        public static ResponseDTO<T> Fail(IEnumerable<string>? errors = null, string? message = null, int statusCode = 400, Dictionary<string, string[]>? validationErrors = null) =>
+        public ResponseDTO<T> Fail(IEnumerable<string>? errors = null, string? message = null, int statusCode = 400, Dictionary<string, string[]>? validationErrors = null) =>
             new()
             {
                 Success = false,
@@ -31,7 +31,7 @@
                 ValidationErrors = validationErrors
             };
 
-        public static ResponseDTO<T> FromException(Exception exception, int statusCode = 500) =>
+        public ResponseDTO<T> FromException(Exception exception, int statusCode = 500) =>
             new()
             {
                 Success = false,

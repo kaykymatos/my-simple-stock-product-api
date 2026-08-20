@@ -1,12 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MySimpleStockProduct.Domain.Entities;
 using MySimpleStockProduct.Domain.Interfaces;
+using MySimpleStockProduct.Infra.Context;
 
 namespace MySimpleStockProduct.Infra.Repositories
 {
     public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
     {
-        public CategoryRepository(DbContext context) : base(context)
+        public CategoryRepository(ApplicationDbContext context) : base(context)
         {
         }
     }

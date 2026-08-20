@@ -1,53 +1,125 @@
 ﻿using MySimpleStockProduct.Application.DTOs;
 using MySimpleStockProduct.Application.Interfaces;
+using MySimpleStockProduct.Application.Mappers;
+using MySimpleStockProduct.Domain.Entities;
+using MySimpleStockProduct.Domain.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MySimpleStockProduct.Application.Services
 {
     public class CategoryService : ICategoryService
     {
-        public Task<ResponseDTO<CategoryDTO>> CreateAsync(CategoryDTO dto, CancellationToken cancellationToken = default)
+        private readonly ICategoryRepository _categoryRepository;
+
+        public CategoryService(ICategoryRepository categoryRepository)
         {
-            throw new NotImplementedException();
+            _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
         }
 
-        public Task<ResponseDTO<ProductDTO>> CreateAsync(ProductDTO dto, CancellationToken cancellationToken = default)
+        public async Task<ResponseDTO<CategoryDTO>> CreateAsync(CategoryDTO dto, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var response = new ResponseDTO<CategoryDTO>();
+
+            if (dto is null)
+            {
+                response.Fail([], "Category payload is null.");
+                return response;
+            }
+
+            var entity = new Category(dto.Name, dto.Description);
+            await _categoryRepository.AddAsync(entity, cancellationToken).ConfigureAwait(false);
+            response.Ok(CategoryMapper.ToDto(entity));
+            return response;
         }
 
-        public Task<ResponseDTO<bool>> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<ResponseDTO<bool>> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var response = new ResponseDTO<bool>();
+
+            if (id == Guid.Empty)
+            {
+                response.Fail([], "Invalid id.");
+                return response;
+            }
+
+            var exists = await _categoryRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
+            if (exists is null)
+            {
+                response.Fail([], "Category not found.");
+                return response;
+            }
+
+            try
+            {
+                await _categoryRepository.DeleteAsync(exists, cancellationToken).ConfigureAwait(false);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                return response.FromException(ex);
+            }
         }
 
-        public Task<ResponseDTO<IEnumerable<CategoryDTO>>> GetAsync(int page, int pageSize, CancellationToken cancellationToken = default)
+        public async Task<ResponseDTO<IEnumerable<CategoryDTO>>> GetAsync(int page, int pageSize, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var response = new ResponseDTO<IEnumerable<CategoryDTO>>();
+
+            var entities = await _categoryRepository.GetAsync(page, pageSize, cancellationToken).ConfigureAwait(false);
+            var dtos = entities.Select(CategoryMapper.ToDto).ToList();
+
+            response.Ok(dtos);
+            return response;
         }
 
-        public Task<ResponseDTO<CategoryDTO>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<ResponseDTO<CategoryDTO>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var response = new ResponseDTO<CategoryDTO>();
+
+            if (id == Guid.Empty)
+            {
+                response.Fail([], "Invalid id.");
+                return response;
+            }
+
+            var entity = await _categoryRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
+            if (entity is null)
+            {
+                response.Fail([], "Category not found.");
+                return response;
+            }
+
+            response.Ok(CategoryMapper.ToDto(entity));
+            return response;
         }
 
-        public Task<ResponseDTO<CategoryDTO>> UpdateAsync(Guid id, CategoryDTO dto, CancellationToken cancellationToken = default)
+        public async Task<ResponseDTO<CategoryDTO>> UpdateAsync(Guid id, CategoryDTO dto, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
-        }
+            var response = new ResponseDTO<CategoryDTO>();
 
-        public Task<ResponseDTO<ProductDTO>> UpdateAsync(Guid id, ProductDTO dto, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
+            if (id == Guid.Empty || dto is null)
+            {
+                response.Fail([], "Invalid input.");
+                return response;
+            }
 
-        Task<ResponseDTO<IEnumerable<ProductDTO>>> IBaseService<ProductDTO>.GetAsync(int page, int pageSize, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+            var existing = await _categoryRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
+            if (existing is null)
+            {
+                response.Fail([], "Category not found.");
+                return response;
+            }
 
-        Task<ResponseDTO<ProductDTO>> IBaseService<ProductDTO>.GetByIdAsync(Guid id, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
+            existing.Name = dto.Name;
+            existing.Description = dto.Description;
+            existing.UpdatedAt = DateTime.UtcNow;
+
+            await _categoryRepository.UpdateAsync(existing, cancellationToken).ConfigureAwait(false);
+            response.Ok(CategoryMapper.ToDto(existing));
+            return response;
         }
     }
 }
