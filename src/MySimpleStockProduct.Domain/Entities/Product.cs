@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MySimpleStockProduct.Domain.Entities
+﻿namespace MySimpleStockProduct.Domain.Entities
 {
     public class Product : BaseEntity
     {

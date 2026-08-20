@@ -3,11 +3,6 @@ using MySimpleStockProduct.Application.Interfaces;
 using MySimpleStockProduct.Application.Mappers;
 using MySimpleStockProduct.Domain.Entities;
 using MySimpleStockProduct.Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace MySimpleStockProduct.Application.Services
 {
@@ -22,7 +17,7 @@ namespace MySimpleStockProduct.Application.Services
 
         public async Task<ResponseDTO<CategoryDTO>> CreateAsync(CategoryDTO dto, CancellationToken cancellationToken = default)
         {
-            var response = new ResponseDTO<CategoryDTO>();
+            ResponseDTO<CategoryDTO> response = new ResponseDTO<CategoryDTO>();
 
             if (dto is null)
             {
@@ -30,7 +25,7 @@ namespace MySimpleStockProduct.Application.Services
                 return response;
             }
 
-            var entity = new Category(dto.Name, dto.Description);
+            Category entity = new Category(dto.Name, dto.Description);
             await _categoryRepository.AddAsync(entity, cancellationToken).ConfigureAwait(false);
             response.Ok(CategoryMapper.ToDto(entity));
             return response;
@@ -38,7 +33,7 @@ namespace MySimpleStockProduct.Application.Services
 
         public async Task<ResponseDTO<bool>> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var response = new ResponseDTO<bool>();
+            ResponseDTO<bool> response = new ResponseDTO<bool>();
 
             if (id == Guid.Empty)
             {
@@ -46,7 +41,7 @@ namespace MySimpleStockProduct.Application.Services
                 return response;
             }
 
-            var exists = await _categoryRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
+            Category? exists = await _categoryRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
             if (exists is null)
             {
                 response.Fail([], "Category not found.");
@@ -66,10 +61,10 @@ namespace MySimpleStockProduct.Application.Services
 
         public async Task<ResponseDTO<IEnumerable<CategoryDTO>>> GetAsync(int page, int pageSize, CancellationToken cancellationToken = default)
         {
-            var response = new ResponseDTO<IEnumerable<CategoryDTO>>();
+            ResponseDTO<IEnumerable<CategoryDTO>> response = new ResponseDTO<IEnumerable<CategoryDTO>>();
 
-            var entities = await _categoryRepository.GetAsync(page, pageSize, cancellationToken).ConfigureAwait(false);
-            var dtos = entities.Select(CategoryMapper.ToDto).ToList();
+            IReadOnlyList<Category> entities = await _categoryRepository.GetAsync(page, pageSize, cancellationToken).ConfigureAwait(false);
+            List<CategoryDTO> dtos = entities.Select(CategoryMapper.ToDto).ToList();
 
             response.Ok(dtos);
             return response;
@@ -77,7 +72,7 @@ namespace MySimpleStockProduct.Application.Services
 
         public async Task<ResponseDTO<CategoryDTO>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var response = new ResponseDTO<CategoryDTO>();
+            ResponseDTO<CategoryDTO> response = new ResponseDTO<CategoryDTO>();
 
             if (id == Guid.Empty)
             {
@@ -85,7 +80,7 @@ namespace MySimpleStockProduct.Application.Services
                 return response;
             }
 
-            var entity = await _categoryRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
+            Category? entity = await _categoryRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
             if (entity is null)
             {
                 response.Fail([], "Category not found.");
@@ -98,7 +93,7 @@ namespace MySimpleStockProduct.Application.Services
 
         public async Task<ResponseDTO<CategoryDTO>> UpdateAsync(Guid id, CategoryDTO dto, CancellationToken cancellationToken = default)
         {
-            var response = new ResponseDTO<CategoryDTO>();
+            ResponseDTO<CategoryDTO> response = new ResponseDTO<CategoryDTO>();
 
             if (id == Guid.Empty || dto is null)
             {
@@ -106,7 +101,7 @@ namespace MySimpleStockProduct.Application.Services
                 return response;
             }
 
-            var existing = await _categoryRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
+            Category? existing = await _categoryRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
             if (existing is null)
             {
                 response.Fail([], "Category not found.");

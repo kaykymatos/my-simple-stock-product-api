@@ -17,14 +17,14 @@ namespace MySimpleStockProduct.Application.Services
 
         public async Task<ResponseDTO<ProductDTO>> CreateAsync(ProductDTO dto, CancellationToken cancellationToken = default)
         {
-            var response = new ResponseDTO<ProductDTO>();
+            ResponseDTO<ProductDTO> response = new ResponseDTO<ProductDTO>();
 
             if (dto is null)
             {
                 response.Fail([], "Product payload is null.");
                 return response;
             }
-            var entity = ProductMapper.ToEntity(dto);
+            Product entity = ProductMapper.ToEntity(dto);
             await _ProductRepository.AddAsync(entity, cancellationToken).ConfigureAwait(false);
             response.Ok(ProductMapper.ToDto(entity));
             return response;
@@ -32,7 +32,7 @@ namespace MySimpleStockProduct.Application.Services
 
         public async Task<ResponseDTO<bool>> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var response = new ResponseDTO<bool>();
+            ResponseDTO<bool> response = new ResponseDTO<bool>();
 
             if (id == Guid.Empty)
             {
@@ -40,7 +40,7 @@ namespace MySimpleStockProduct.Application.Services
                 return response;
             }
 
-            var exists = await _ProductRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
+            Product? exists = await _ProductRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
             if (exists is null)
             {
                 response.Fail([], "Product not found.");
@@ -60,10 +60,10 @@ namespace MySimpleStockProduct.Application.Services
 
         public async Task<ResponseDTO<IEnumerable<ProductDTO>>> GetAsync(int page, int pageSize, CancellationToken cancellationToken = default)
         {
-            var response = new ResponseDTO<IEnumerable<ProductDTO>>();
+            ResponseDTO<IEnumerable<ProductDTO>> response = new ResponseDTO<IEnumerable<ProductDTO>>();
 
-            var entities = await _ProductRepository.GetAsync(page, pageSize, cancellationToken).ConfigureAwait(false);
-            var dtos = entities.Select(ProductMapper.ToDto).ToList();
+            IReadOnlyList<Product> entities = await _ProductRepository.GetAsync(page, pageSize, cancellationToken).ConfigureAwait(false);
+            List<ProductDTO> dtos = entities.Select(ProductMapper.ToDto).ToList();
 
             response.Ok(dtos);
             return response;
@@ -71,7 +71,7 @@ namespace MySimpleStockProduct.Application.Services
 
         public async Task<ResponseDTO<ProductDTO>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var response = new ResponseDTO<ProductDTO>();
+            ResponseDTO<ProductDTO> response = new ResponseDTO<ProductDTO>();
 
             if (id == Guid.Empty)
             {
@@ -79,7 +79,7 @@ namespace MySimpleStockProduct.Application.Services
                 return response;
             }
 
-            var entity = await _ProductRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
+            Product? entity = await _ProductRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
             if (entity is null)
             {
                 response.Fail([], "Product not found.");
@@ -92,7 +92,7 @@ namespace MySimpleStockProduct.Application.Services
 
         public async Task<ResponseDTO<ProductDTO>> UpdateAsync(Guid id, ProductDTO dto, CancellationToken cancellationToken = default)
         {
-            var response = new ResponseDTO<ProductDTO>();
+            ResponseDTO<ProductDTO> response = new ResponseDTO<ProductDTO>();
 
             if (id == Guid.Empty || dto is null)
             {
@@ -100,7 +100,7 @@ namespace MySimpleStockProduct.Application.Services
                 return response;
             }
 
-            var existing = await _ProductRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
+            Product? existing = await _ProductRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
             if (existing is null)
             {
                 response.Fail([], "Product not found.");

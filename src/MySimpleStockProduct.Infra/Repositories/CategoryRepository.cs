@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MySimpleStockProduct.Domain.Entities;
+﻿using MySimpleStockProduct.Domain.Entities;
 using MySimpleStockProduct.Domain.Interfaces;
 using MySimpleStockProduct.Infra.Context;
 
