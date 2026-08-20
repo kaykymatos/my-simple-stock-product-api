@@ -14,6 +14,9 @@
   <Folder Name="/5 - Shareable/">
     <Project Path="src/MySimpleStockProduct.IoC/MySimpleStockProduct.IoC.csproj" Id="58e08656-ef2f-42fc-a6fa-42d9dc1f3eda" />
   </Folder>
+  <Folder Name="/SolitionItens/">
+    <File Path="Directory.Packages.props" />
+  </Folder>
   <Folder Name="/Tests/">
     <Project Path="test/MySimpleStockProduct.Api.Tests/MySimpleStockProduct.Api.Tests.csproj" Id="80a1779f-95d5-4034-9433-2ffcf44a97cd" />
     <Project Path="test/MySimpleStockProduct.Application.Tests/MySimpleStockProduct.Application.Tests.csproj" Id="56f2a542-603d-4219-8ef6-936c1f058823" />

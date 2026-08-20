@@ -46,7 +46,7 @@ namespace MySimpleStockProduct.Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("MySimpleStockProduct.Domain.Entities.Product", b =>
@@ -82,7 +82,7 @@ namespace MySimpleStockProduct.Infra.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("MySimpleStockProduct.Domain.Entities.Product", b =>

@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MySimpleStockProduct.Application.Interfaces;
+using MySimpleStockProduct.Application.Services;
 using MySimpleStockProduct.Domain.Interfaces;
 using MySimpleStockProduct.Infra.Context;
 using MySimpleStockProduct.Infra.Repositories;
@@ -19,6 +21,9 @@ namespace MySimpleStockProduct.IoC
 
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
+
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IProductService, ProductService>();
 
             return services;
         }
