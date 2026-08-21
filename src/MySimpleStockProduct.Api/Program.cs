@@ -27,10 +27,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app
-    .MapProductEndpoints();
-
 CategoryEndpoints.MapCategoryEndpoints(app);
+ProdctEndpoints.MapProductEndpoints(app);
 
 app.UseHttpsRedirection();
 
