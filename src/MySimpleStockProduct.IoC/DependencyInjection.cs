@@ -6,6 +6,7 @@ using MySimpleStockProduct.Application.Services;
 using MySimpleStockProduct.Domain.Interfaces;
 using MySimpleStockProduct.Infra.Context;
 using MySimpleStockProduct.Infra.Repositories;
+using MySimpleStockProduct.Logging;
 
 namespace MySimpleStockProduct.IoC
 {
@@ -21,7 +22,7 @@ namespace MySimpleStockProduct.IoC
 
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
-
+            services.AddTransient(typeof(ICustomLogger<>), typeof(CustomLogger<>));
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductService, ProductService>();
 

@@ -21,6 +21,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\MySimpleStockProduct.IoC\MySimpleStockProduct.IoC.csproj" />
+	  <ProjectReference Include="..\MySimpleStockProduct.Logging\MySimpleStockProduct.Logging.csproj" />
 	</ItemGroup>
 
 </Project>

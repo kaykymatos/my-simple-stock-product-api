@@ -23,14 +23,14 @@ namespace MySimpleStockProduct.Application.Services
 
         public async Task<ResponseDTO<ProductDTO>> CreateAsync(ProductDTO dto, CancellationToken cancellationToken = default)
         {
-            var response = new ResponseDTO<ProductDTO>();
+            ResponseDTO<ProductDTO> response = new ResponseDTO<ProductDTO>();
 
             if (dto is null)
             {
                 response.Fail("Product payload is null.");
                 return response;
             }
-            var category = await _categoryRepository.GetByIdAsync(dto.CategoryId, cancellationToken);
+            Category? category = await _categoryRepository.GetByIdAsync(dto.CategoryId, cancellationToken);
             if (category is null)
             {
                 response.Fail("Category not found.");
@@ -54,7 +54,7 @@ namespace MySimpleStockProduct.Application.Services
                 response.FromException(ex);
                 return response;
             }
-           
+
         }
 
         public async Task<ResponseDTO<bool>> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
@@ -129,14 +129,14 @@ namespace MySimpleStockProduct.Application.Services
                 return response;
             }
 
-            var existing = await _productRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
+            Product? existing = await _productRepository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
             if (existing is null)
             {
                 response.Fail("Product not found.");
                 return response;
             }
 
-            var category = await _categoryRepository.GetByIdAsync(dto.CategoryId, cancellationToken);
+            Category? category = await _categoryRepository.GetByIdAsync(dto.CategoryId, cancellationToken);
             if (category is null)
             {
                 response.Fail("Category not found.");

@@ -13,6 +13,7 @@
   </Folder>
   <Folder Name="/5 - Shareable/">
     <Project Path="src/MySimpleStockProduct.IoC/MySimpleStockProduct.IoC.csproj" Id="58e08656-ef2f-42fc-a6fa-42d9dc1f3eda" />
+    <Project Path="src/MySimpleStockProduct.Logging/MySimpleStockProduct.Logging.csproj" Id="401261d5-5cf0-4082-8013-397fe2864f00" />
   </Folder>
   <Folder Name="/SolitionItens/">
     <File Path="Directory.Packages.props" />
